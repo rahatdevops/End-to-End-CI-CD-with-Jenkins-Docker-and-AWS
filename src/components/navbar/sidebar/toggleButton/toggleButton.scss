@@ -1,0 +1,11 @@
+.open-btn {
+	//opacity: 0;
+	transform: translateY(0);
+	transition: transform 0.5s;
+}
+
+.closed-btn {
+	//opacity: 0;
+	transform: translateY(-100%);
+	transition: transform 0.3s;
+}

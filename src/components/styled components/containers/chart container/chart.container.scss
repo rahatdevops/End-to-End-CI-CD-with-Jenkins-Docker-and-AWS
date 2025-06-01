@@ -1,0 +1,12 @@
+@import "./../../../../theme/theme.scss";
+
+.chart-container {
+	@include themify($themes) {
+		//	padding: 5px;
+		border-radius: 8px;
+		//overflow: hidden;
+		background-color: themed("background");
+		height: 100%;
+		width: 100%;
+	}
+}

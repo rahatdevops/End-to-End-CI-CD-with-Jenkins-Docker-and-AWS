@@ -1,0 +1,92 @@
+//color peletes
+$main: hsl(281, 77%, 41%);
+$mainLight: hsla(281, 77%, 41%, 0.422);
+$mainDisabled: hsla(281, 69%, 19%, 0.313);
+//primary
+$secondary: rgb(35, 35, 35);
+$secondaryDisabled: rgb(43, 43, 43);
+
+//background
+//light mode
+$lightBackround: #ffffff;
+$softLightBackground: #e8e8e8;
+
+//dark mode
+$darkBackround: #181818;
+$softDarkBackground: #252525;
+
+//borders
+//light mode
+$lightBorder: rgba(144, 144, 144, 0.559); //will be used as hover too
+
+//dark mode
+$darkBorder: rgba(137, 137, 137, 0.493); //will be used as hover too
+
+$minBackground: rgba(119, 119, 119, 0.052);
+
+$themes: (
+	light: (
+		color: white,
+
+		text: rgba(50, 50, 50, 0.759),
+		background: $lightBackround,
+		softBackground: $softLightBackground,
+		sb: rgba(147, 147, 147, 0.122),
+		border: $lightBorder,
+
+		info: rgba(195, 195, 195, 0.267),
+		icon: rgba(47, 47, 47, 0.672),
+		shadow: rgba(75, 75, 75, 0.389),
+		hover: rgba(133, 133, 133, 0.275),
+		glass: rgba(245, 245, 245, 0.593),
+		disabled: rgb(217, 217, 217),
+		//----filters
+		backdrop: rgba(0, 0, 0, 0.181),
+		//---
+		tooltip: rgb(237, 237, 237),
+	),
+
+	dark: (
+		//color: rgba(0, 0, 0, 0.234),
+		color: black,
+
+		text: rgb(181, 181, 181),
+		background: $darkBackround,
+		softBackground: $softDarkBackground,
+		sb: rgba(93, 93, 93, 0.102),
+		border: $darkBorder,
+
+		info: rgba(71, 71, 71, 0.267),
+		icon: rgba(236, 236, 236, 0.755),
+		shadow: rgba(65, 65, 65, 0.263),
+		hover: rgba(133, 133, 133, 0.267),
+		glass: rgba(58, 58, 58, 0.22),
+		disabled: rgb(55, 55, 55),
+		backdrop: rgba(48, 48, 48, 0.355),
+		//--
+		tooltip: rgb(45, 45, 45),
+	),
+);
+
+@mixin themify($themes) {
+	@each $theme, $map in $themes {
+		.theme-#{$theme} & {
+			$theme-map: () !global;
+			@each $key, $submap in $map {
+				$value: map-get(map-get($themes, $theme), "#{$key}");
+				$theme-map: map-merge(
+					$theme-map,
+					(
+						$key: $value,
+					)
+				) !global;
+			}
+			@content;
+			$theme-map: null !global;
+		}
+	}
+}
+
+@function themed($key) {
+	@return map-get($theme-map, $key);
+}

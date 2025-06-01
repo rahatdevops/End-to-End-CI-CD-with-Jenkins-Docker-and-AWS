@@ -1,0 +1,55 @@
+pipeline{
+    agent{
+        label "node"
+    }
+
+    environment{
+        IMAGE_NAME = 'nextjs:10'
+    }
+
+    stages{
+         stage("Build App"){
+            steps{
+                echo "Building application..."
+                sh 'npm build'
+            }  
+        }
+
+        stage("Build docker image"){
+            steps{
+                script{
+                    echo "Building docker image..."
+                    withCredentials([usernamePassword(credentialsId:'docker-hub-repo', passwordVariabe:'PASSWORD', usernameVariabe:'USERNAME')]){
+                        sh "docker build -t ${IMAGE_NAME}"
+                        sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
+                        sh "docker push ${IMAGE_NAME}"
+                    }
+                }
+            }    
+        }
+
+        stage("Deploy to AWS"){
+            steps{
+                
+                script{
+                    echo "Deploying docker image to AWS"
+                    def dockerCmd = "docker-compose -f docker-compose.yaml up --detach"
+                    sshagent(['ec2-server-key']){
+                        sh 'scp docker-compose-yaml ec2-user@ip:directory of the app(/home/ec2-user)'
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@ec2ip ${dockerCmd}"
+                    }
+                }
+            }   
+        }
+    }
+
+    post{
+        
+        success{
+            echo "The pipline succesfuly depoyed the app to AWS"
+        }
+        failure{
+            echo "The pipline failed to deploy the app to AWS!"
+        }
+    }
+}
