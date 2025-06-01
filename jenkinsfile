@@ -1,7 +1,5 @@
 pipeline{
-    agent{
-        label "node"
-    }
+    agent any
 
     environment{
         IMAGE_NAME = 'nextjs:10'
