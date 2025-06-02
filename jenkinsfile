@@ -2,28 +2,27 @@ pipeline{
     agent any
 
     environment{
-        IMAGE_NAME = 'nextjs:10'
+        IMAGE_NAME = 'jamiekariuki/nextjs-app'
     }
 
     stages{
-         stage("Build App"){
+        stage("Checkout code"){
             steps{
-                echo "Building application..."
-            //    sh 'npm build'
-            }  
+                echo "Checking out code from repository..."  
+            }
         }
 
         stage("Build docker image"){
             steps{
-                echo "Building application now ..."
-            /*     script{
+               
+                 script{
                     echo "Building docker image..."
-                    withCredentials([usernamePassword(credentialsId:'docker-hub-repo', passwordVariabe:'PASSWORD', usernameVariabe:'USERNAME')]){
+                    withCredentials([usernamePassword(credentialsId:'dockerHub', passwordVariabe:'PASSWORD', usernameVariabe:'USERNAME')]){
                         sh "docker build -t ${IMAGE_NAME}"
                         sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
                         sh "docker push ${IMAGE_NAME}"
                     }
-                }*/
+                }
             }   
         }
 
@@ -31,15 +30,15 @@ pipeline{
             steps{
                 echo "deploying to aws application..."
                 
-              /*   script{
+               /*   script{
                     echo "Deploying docker image to AWS"
                     def dockerCmd = "docker-compose -f docker-compose.yaml up --detach"
                     sshagent(['ec2-server-key']){
                         sh 'scp docker-compose-yaml ec2-user@ip:directory of the app(/home/ec2-user)'
                         sh "ssh -o StrictHostKeyChecking=no ec2-user@ec2ip ${dockerCmd}"
                     }
-                }*/
-            }   
+                } */
+             }    
         }
     }
 

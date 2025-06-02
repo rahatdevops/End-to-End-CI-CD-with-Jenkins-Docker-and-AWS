@@ -1,7 +1,7 @@
 version: "3.8"
 services:
     nextjsapp:
-        image: nextjs_app
+        image: jamiekariuki/nextjs-app
         ports:
             - "3000:3000"
         environment:
