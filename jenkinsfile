@@ -46,11 +46,12 @@ pipeline{
         script{
             echo "Deploying docker image to AWS..."
             def dockerCmd = "docker-compose -f docker-compose.yaml up --detach"
-            sshagent(['ec2-server-key']){
-                sh "ssh-keyscan -H ${SERVER_IP.split('@')[1]} >> ~/.ssh/known_hosts"
-                sh "scp docker-compose.yaml ${SERVER_IP}:/home/ubuntu"
-                sh "ssh -o StrictHostKeyChecking=no ${SERVER_IP} '${dockerCmd}'"
-            }
+            sshagent(['ec2-server-key']) {
+    sh "mkdir -p ~/.ssh"
+    sh "ssh-keyscan -H ${SERVER_IP.split('@')[1]} >> ~/.ssh/known_hosts"
+    sh "scp docker-compose.yaml ${SERVER_IP}:/home/ubuntu"
+    sh "ssh -o StrictHostKeyChecking=no ${SERVER_IP} '${dockerCmd}'"
+}
         } 
     }    
 }
