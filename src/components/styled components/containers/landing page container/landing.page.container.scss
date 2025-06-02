@@ -1,8 +1,0 @@
-@import "../../../../theme/theme.scss";
-
-.lpc {
-	@include themify($themes) {
-		background-color: themed("background");
-		padding-bottom: 30px;
-	}
-}

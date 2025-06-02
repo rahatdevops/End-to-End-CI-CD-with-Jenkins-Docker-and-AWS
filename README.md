@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Simple Web Application – End-to-End DevOps Demo
 
-## Getting Started
+This is a simple web application that displays the message "This is an end-to-end DevOps project." It is designed to demonstrate the use of Docker for containerization and CI/CD with Jenkins.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Project Structure
+
+```
+jenkins-ci-cd/
+├── src/
+│   ├── index.html      # Main HTML file
+│   ├── styles.css      # CSS for styling
+│   └── app.js          # JavaScript for interactivity
+├── Dockerfile          # Builds the Nginx-based image
+├── docker-compose.yaml # Defines how to run the app container
+├── Jenkinsfile         # Jenkins pipeline for CI/CD
+└── README.md           # Project documentation
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Running the Application Locally (Without Docker)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Open the `src/index.html` file directly in your browser  
+   **OR**
+2. Use a simple HTTP server (recommended for JS/CSS):
+    - With Python:
+        ```
+        cd src
+        python -m http.server 8000
+        ```
+        Then visit [http://localhost:8000](http://localhost:8000)
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Running with Docker Compose
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Navigate to the project directory:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    ```
+    cd jenkins-ci-cd
+    ```
 
-## Deploy on Vercel
+2. Build the Docker image and start the container using Docker Compose:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    ```
+    docker-compose up --build
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Open a web browser and go to [http://localhost:8080](http://localhost:8080) to view the application.
+
+---
+
+## CI/CD Deployment Workflow
+
+1. **Jenkins Pipeline:**
+    - Jenkins builds the Docker image from the `Dockerfile`
+    - Jenkins tags and pushes the image to a Docker registry (e.g., Docker Hub)
+2. **Production/Deployment Server:**
+    - Pulls the latest image from the registry
+    - Runs `docker-compose up -d` to start the app
+
+**Example `docker-compose.yaml` for deployment:**
+
+```yaml
+version: "3.8"
+services:
+    web:
+        image: your-dockerhub-username/your-image-name:tag
+        ports:
+            - "8080:80"
+        volumes:
+            - web-data:/usr/share/nginx/html
+
+volumes:
+    web-data:
+```
+
+Replace `your-dockerhub-username/your-image-name:tag` with your actual image name and tag.
+
+---
+
+## Summary
+
+-   **Frontend:** HTML, CSS, JavaScript
+-   **Containerization:** Docker, Nginx
+-   **Orchestration:** Docker Compose
+-   **CI/CD:** Jenkins (build, push, deploy)
+-   **Demo:** "This is an end-to-end DevOps project" (with interactive JS)
+
+---
