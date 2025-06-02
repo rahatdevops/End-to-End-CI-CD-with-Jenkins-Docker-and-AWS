@@ -15,7 +15,7 @@ pipeline{
 
         stage("Build docker image"){
             steps{
-                echo "Building application..."
+                echo "Building application now ..."
             /*     script{
                     echo "Building docker image..."
                     withCredentials([usernamePassword(credentialsId:'docker-hub-repo', passwordVariabe:'PASSWORD', usernameVariabe:'USERNAME')]){
