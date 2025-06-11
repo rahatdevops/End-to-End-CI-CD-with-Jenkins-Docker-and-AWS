@@ -2,8 +2,8 @@ pipeline{
     agent any
 
     environment{
-        IMAGE_NAME = 'jamiekariuki/nextjs-app'
-        SERVER_IP = 'ubuntu@51.20.63.70'
+        IMAGE_NAME = 'rahat6/nextjs-app'
+        SERVER_IP = 'ubuntu@54.251.189.13'
     }
 
     stages{
