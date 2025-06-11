@@ -29,20 +29,21 @@ pipeline {
             }
         }
 
-       stage("Deploy to AWS") {
-    steps {
-        script {
-            echo "Deploying docker image to AWS..."
-            def dockerCmd = "sudo docker-compose -f docker-compose.yaml up -d --pull always --force-recreate"
-            sshagent(['ec2-server-key']) {
-                sh "mkdir -p ~/.ssh"
-                sh "ssh-keyscan -H ${SERVER_IP.split('@')[1]} >> ~/.ssh/known_hosts"
-                sh "scp docker-compose.yaml ${SERVER_IP}:/home/ubuntu"
-                sh "ssh -o StrictHostKeyChecking=no ${SERVER_IP} '${dockerCmd}'"
+        stage("Deploy to AWS") {
+            steps {
+                script {
+                    echo "Deploying docker image to AWS..."
+                    def dockerCmd = "sudo docker-compose -f docker-compose.yaml up -d --pull always --force-recreate"
+                    sshagent(['ec2-server-key']) {
+                        sh "mkdir -p ~/.ssh"
+                        sh "ssh-keyscan -H ${SERVER_IP.split('@')[1]} >> ~/.ssh/known_hosts"
+                        sh "scp docker-compose.yaml ${SERVER_IP}:/home/ubuntu"
+                        sh "ssh -o StrictHostKeyChecking=no ${SERVER_IP} '${dockerCmd}'"
+                    }
+                }
             }
         }
     }
-}
 
     post {
         success {
