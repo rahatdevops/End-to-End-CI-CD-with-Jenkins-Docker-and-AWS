@@ -1,3 +1,4 @@
+You said:
 pipeline{
     agent any
 
@@ -13,42 +14,50 @@ pipeline{
             }
         }
 
-        stage("Build docker image"){
-            steps{
-               
-                 script{
-                    echo "Building docker image..."
-                    withCredentials([usernamePassword(credentialsId:'dockerhub', passwordVariable:'PASSWORD', usernameVariable:'USERNAME')]){
-                        sh "docker build -t ${IMAGE_NAME} ."
-                        sh '''
-                            echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
-                        '''
-                        sh "docker push ${IMAGE_NAME}"
-                    }
-                }
-            }   
-        }
-
-        stage("Deploy to AWS"){
-    steps {
-        script {
-            echo "Deploying docker image to AWS..."
-            def dockerCmd = """
-                cd /home/ubuntu &&
-                docker-compose pull &&
-                docker-compose down &&
-                docker-compose up -d --remove-orphans
-            """
-            sshagent(['ec2-server-key']) {
-                sh "mkdir -p ~/.ssh"
-                sh "ssh-keyscan -H ${SERVER_IP.split('@')[1]} >> ~/.ssh/known_hosts"
-                sh "scp docker-compose.yaml ${SERVER_IP}:/home/ubuntu"
-                sh "ssh -o StrictHostKeyChecking=no ${SERVER_IP} '${dockerCmd}'"
+       stage("Build docker image"){
+    steps{
+        script{
+            echo "Building docker image..."
+            withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]){
+                def latestTag = "${IMAGE_NAME}:latest"
+                sh "docker build -t ${latestTag} ."
+                sh '''
+                    echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
+                '''
+                sh "docker push ${latestTag}"
             }
         }
-    }
+    }   
 }
 
+
+        /* stage("Deploy to AWS"){
+            steps{
+                 script{
+                    echo "Deploying docker image to AWS..."
+                    def dockerCmd = "sudo docker compose -f docker-compose.yaml up -d --pull always --force-recreate"
+                    sshagent(['ec2-server-key']){
+                        sh "scp docker-compose.yaml ${SERVER_IP}:/home/ubuntu"
+                        sh "ssh -o StrictHostKeyChecking=no ${SERVER_IP} ${dockerCmd}"
+                    }
+                } 
+             }    
+        } */
+        stage("Deploy to AWS"){
+    steps{
+        script{
+            echo "Deploying docker image to AWS..."
+            def dockerCmd = "sudo docker compose -f docker-compose.yaml up -d --pull always --force-recreate"
+            sshagent(['ec2-server-key']) {
+    sh "mkdir -p ~/.ssh"
+    sh "ssh-keyscan -H ${SERVER_IP.split('@')[1]} >> ~/.ssh/known_hosts"
+    sh "scp docker-compose.yaml ${SERVER_IP}:/home/ubuntu"
+    sh "ssh -o StrictHostKeyChecking=no ${SERVER_IP} '${dockerCmd}'"
+}
+        } 
+    }    
+}
+    }
 
     post{
         
