@@ -6,6 +6,7 @@ document.querySelector("h1").addEventListener("click", () => {
 		"Docker + Jenkins = ❤️",
 		"Enjoy your DevOps journey!",
 		"Keep Learning Devops :)",
+		"Keep Learning Devops2 :)",
 	];
 	const h1 = document.querySelector("h1");
 	const randomGreeting =
