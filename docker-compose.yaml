@@ -1,7 +1,8 @@
 version: "3.8"
 services:
     web:
-        image: rahat6/nextjs-app
+        image: rahat6/nextjs-app:latest
+        restart: always
         ports:
             - "3000:80"
         volumes:
