@@ -5,10 +5,6 @@ services:
     image: rahat6/nextjs-app:latest
     ports:
       - "3000:80"
-    volumes:
-      - web-data:/usr/share/nginx/html
     restart: always
 
-volumes:
-  web-data:
 
