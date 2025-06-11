@@ -1,7 +1,7 @@
 version: "3.8"
 services:
     web:
-        image: jamiekariuki/nextjs-app
+        image: rahat6/nextjs-app
         ports:
             - "3000:80"
         volumes:
