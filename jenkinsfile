@@ -1,56 +1,69 @@
-pipeline {
+pipeline{
     agent any
 
-    environment {
+    environment{
         IMAGE_NAME = 'rahat6/nextjs-app'
         SERVER_IP = 'ubuntu@54.251.189.13'
     }
 
-    stages {
-        stage("Checkout code") {
-            steps {
-                echo "Checking out code from repository...."
+    stages{
+        stage("Checkout code"){
+            steps{
+                echo "Checking out code from repository...."  
             }
         }
 
-        stage("Build docker image") {
-            steps {
-                script {
+        stage("Build docker image"){
+            steps{
+               
+                 script{
                     echo "Building docker image..."
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        def latestTag = "${IMAGE_NAME}:latest"
-                        sh "docker build -t ${latestTag} ."
+                    withCredentials([usernamePassword(credentialsId:'dockerhub', passwordVariable:'PASSWORD', usernameVariable:'USERNAME')]){
+                        sh "docker build -t ${IMAGE_NAME} ."
                         sh '''
                             echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
                         '''
-                        sh "docker push ${latestTag}"
+                        sh "docker push ${IMAGE_NAME}"
                     }
                 }
-            }
+            }   
         }
 
-        stage("Deploy to AWS") {
-            steps {
-                script {
+        /* stage("Deploy to AWS"){
+            steps{
+                 script{
                     echo "Deploying docker image to AWS..."
-                    def dockerCmd = "sudo docker-compose -f docker-compose.yaml up -d --pull always --force-recreate"
-                    sshagent(['ec2-server-key']) {
-                        sh "mkdir -p ~/.ssh"
-                        sh "ssh-keyscan -H ${SERVER_IP.split('@')[1]} >> ~/.ssh/known_hosts"
+                    def dockerCmd = "docker-compose -f docker-compose.yaml up --detach"
+                    sshagent(['ec2-server-key']){
                         sh "scp docker-compose.yaml ${SERVER_IP}:/home/ubuntu"
-                        sh "ssh -o StrictHostKeyChecking=no ${SERVER_IP} '${dockerCmd}'"
+                        sh "ssh -o StrictHostKeyChecking=no ${SERVER_IP} ${dockerCmd}"
                     }
-                }
-            }
-        }
+                } 
+             }    
+        } */
+        stage("Deploy to AWS"){
+    steps{
+        script{
+            echo "Deploying docker image to AWS..."
+            def dockerCmd = "sudo docker-compose -f docker-compose.yaml up --detach"
+            sshagent(['ec2-server-key']) {
+    sh "mkdir -p ~/.ssh"
+    sh "ssh-keyscan -H ${SERVER_IP.split('@')[1]} >> ~/.ssh/known_hosts"
+    sh "scp docker-compose.yaml ${SERVER_IP}:/home/ubuntu"
+    sh "ssh -o StrictHostKeyChecking=no ${SERVER_IP} '${dockerCmd}'"
+}
+        } 
+    }    
+}
     }
 
-    post {
-        success {
-            echo "The pipeline successfully deployed the app to AWS"
+    post{
+        
+        success{
+            echo "The pipline succesfuly depoyed the app to AWS"
         }
-        failure {
-            echo "The pipeline failed to deploy the app to AWS!"
+        failure{
+            echo "The pipline failed to deploy the app to AWS!"
         }
     }
 }
